@@ -1,0 +1,32 @@
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+// Globalno polje
+char array[100000];
+
+int main() {
+    // Inicijalizacija generatora slučajnih brojeva
+    srand(time(NULL));
+
+    // Popuni polje s -1 ili 1
+    for (int i = 0; i < 100000; ++i) {
+        array[i] = (rand() % 2 == 0) ? 1 : -1;
+    }
+
+    // Ispis polja
+    for (int i = 0; i < 100000; ++i) {
+        printf("%d ", array[i]);
+    }
+
+    // Ispis veličine izvršne datoteke
+    printf("\n");
+    system("ls -al | grep a.out");
+
+    sleep(10);
+
+    return 0;
+}
+
+// q zaustavi top

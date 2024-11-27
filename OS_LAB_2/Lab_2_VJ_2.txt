@@ -1,0 +1,79 @@
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <string.h>
+void analyze_output(const char *output_file) {
+    FILE *file = fopen(output_file, "r");
+    if (file == NULL) {
+        perror("fopen");
+        exit(EXIT_FAILURE);
+    }
+
+
+    int inverse_count = 0;
+    char line[256];
+    int last_was_parent = 0;
+
+    while (fgets(line, sizeof(line), file) != NULL) {
+        if (strstr(line, "Roditelj")) {
+            if (last_was_parent) {
+                inverse_count++;
+            }
+
+            last_was_parent = 1;
+        } else {
+            last_was_parent = 0;
+        }
+    }
+
+    fclose(file);
+
+
+    printf("%d\n", inverse_count);
+}
+
+
+int main(int argc, char *argv[]) {
+    setbuf(stdout, NULL);
+
+    if (argc != 3) {
+        fprintf(stderr, "Usage: %s <number_of_children> <output_file>\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    int num_children = atoi(argv[1]);
+    const char *output_file = argv[2];
+
+    FILE *file = fopen(output_file, "w");
+    if (file == NULL) {
+        perror("fopen");
+        exit(EXIT_FAILURE);
+    }
+
+    for (int i = 1; i <= num_children; ++i) {
+        pid_t child_pid = fork();
+
+        if (child_pid == -1) {
+            perror("fork");
+            exit(EXIT_FAILURE);
+        }
+
+        if (child_pid == 0) {
+            // Child process
+             fprintf(file, "Dijete #%d\n", i);
+            exit(EXIT_SUCCESS);
+        } else {
+            // Parent process
+            fprintf(file, "Roditelj #%d\n", i);
+            wait(NULL); // Wait for the child to finish
+        }
+    }
+    fclose(file);
+
+    analyze_output(output_file);
+
+    return 0;
+}
+

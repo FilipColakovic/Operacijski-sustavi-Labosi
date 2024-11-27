@@ -1,0 +1,46 @@
+
+
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(int argc, char *argv[]){
+
+        if(argc!=2){
+                printf("Datoteka nije dodana.\n");
+                return 1;
+        }
+
+        const char* ulaznaDatoteka = argv[1];
+        const char* izlaznaDatoteka = argv[2];
+
+        FILE *inputFile, *outputFile;
+
+        inputFile = fopen(ulaznaDatoteka, "r");
+        if(inputFile == NULL){
+                printf("Ulazna datoteka ne radi\n");
+                return 1;
+        }
+
+        outputFile = fopen(izlaznaDatoteka, "w");
+        if(outputFile == NULL){
+                printf("Izlazna datoteka ne radi\n");
+                return 1;
+        }
+
+        char *buffer= (char*)malloc(1);
+     
+
+        size_t read;
+
+        while ((read = fread(buffer, sizeof(buffer), sizeof(buffer), inputFile)) > 0){
+                fwrite(buffer, sizeof(buffer), read, outputFile);
+        }
+
+        fclose(inputFile);
+        fclose(outputFile);
+
+        free(buffer);
+
+        return 0;
+}
+
